@@ -1,0 +1,11 @@
+[Unit]
+Description=Lamprey Main Service
+After=rgb.service
+Required=rgb.service
+
+[Service]
+ExecStart=/home/lamprey/lamprey
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

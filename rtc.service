@@ -1,0 +1,14 @@
+[Unit]
+Description=RTC clock
+Requires=systemd-modules-load.service 
+After=systemd-modules-load.service 
+After=rgb.service
+
+[Type]
+Type=oneshot
+ 
+[Service]
+ExecStart=/home/lamprey/rtc
+ 
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,17 @@
+#!/bin/bash
+sleep 5
+echo ds1338 0x68 >/sys/bus/i2c/devices/i2c-1/new_device
+if [ "$?" -eq 0 ] ; then
+  sleep 1
+  echo "new_device created"
+  hwclock --hctosys --debug --rtc /dev/rtc1 --noadjfile --utc
+  if [ "$?" -eq 0 ] ; then
+    echo "hwclock set from rtc"
+  else
+    echo "hwclock not set"
+    exit 1
+  fi
+else
+  echo "new_device creation failed"
+  exit 2
+fi
