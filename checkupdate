@@ -1,0 +1,84 @@
+#!/bin/bash
+
+sdcard="/media/BCT_"
+file="/media/BCT_/upgradefile"
+
+checkupgrade()
+{
+  echo $sdcard
+  if [ -e $sdcard ] ; then
+    echo "upgrade: sdcard found"
+    upgradeit=0
+  else
+    echo "upgrade: sdcard not found"
+    upgradeit=1
+  fi
+
+#  echo $file
+#  if [ -f $file ] ; then
+#    echo $file
+#    echo "upgrade file found"
+#    upgradeit=0
+#  else
+#    echo "upgrade file NOT found"
+#    upgradeit=1
+#  fi
+}
+
+copyupgrade()
+{
+  cp -r $file /home/lamprey/upgradefolder.gpg
+  if [ "$?" -eq 0 ] ; then
+    rm -r $file
+  else
+    echo "error copying upgrade"
+  fi
+}
+
+exupgrade()
+{
+  #decrypt the tarball
+  gpg --passphrase lamprey --output /home/lamprey/upgradefolder.tar.xz /home/lamprey/upgradefolder.gpg
+  #decompress the tarball
+  tar xmvf /home/lamprey/upgradefolder.tar.xz --directory /home/lamprey/
+  #execute the script
+  /home/lamprey/upgradefolder/upgrademe
+  if [ "$?" -eq 0 ] ; then
+    echo "executed upgrade with exit0"
+  else
+    echo "errors executing upgrade"
+  fi
+}
+
+cleanup()
+{
+rm -r /upgrade*
+rm -r /home/lamprey/upgrade*
+}
+
+############
+### Main Loop
+############
+
+if [ -e /dev/mmcblk1 ] ; then
+  mount /dev/mmcblk0p1 /media/BCT_
+  sleep 5
+  checkupgrade
+  if [ $upgradeit -eq 0 ] ; then
+    #python /home/lamprey/display.py "upgrading" 35
+    sleep 2
+    copyupgrade
+    if [ "$?" -eq 0 ] ; then
+      echo "folder moved for upgrade"
+      echo "successfully attempted to upgrade lamprey"
+      exupgrade
+    fi
+  fi
+#  This causes trouble when trying to remount later!  Don't know why...
+#  umount /dev/mmcblk0p1 /media/BCT_
+  cleanup
+  exit 0
+else
+  cleanup
+  exit 0
+fi
