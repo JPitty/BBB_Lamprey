@@ -1,0 +1,11 @@
+[Unit]
+Description=Auto update the Lamprey
+After=rgb.service
+
+[Service]
+Type=oneshot
+ExecStart=/home/lamprey/checkupdate
+Restart=no
+
+[Install]
+WantedBy=multi-user.target
