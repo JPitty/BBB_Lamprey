@@ -1,0 +1,12 @@
+#!/bin/bash
+
+hwclock --set --date """ $1 """
+if [ "$?" -eq 0 ] ; then
+  hwclock -s
+fi
+
+if [ "$?" -eq 0 ] ; then
+  hwclock -w -f /dev/rtc1
+fi
+
+echo `hwclock -r -f /dev/rtc1`
